@@ -114,15 +114,15 @@ const HOLIDAY = '2026-11-29';
 const PHOTO_DAYS = ['2026-09-27','2026-10-11','2026-10-25','2026-11-08','2026-11-22'];
 
 const WEEKS = [
-  {n:0,start:'2026-09-23',end:'2026-09-27',phase:'Start',sets:2,rirMin:4,rirMax:4,note:'Kennismaken: stel toestellen in en vind je startgewichten.'},
+  {n:0,start:'2026-09-23',end:'2026-09-27',phase:'Start',sets:2,rirMin:4,rirMax:4,note:'Kennismaken: stel de machines in en vind je starting weights.'},
   {n:1,start:'2026-09-28',end:'2026-10-04',phase:'Fundament',sets:2,rirMin:3,rirMax:3,note:'Techniek eerst. Uitademen bij duwen, rustig opstaan.'},
   {n:2,start:'2026-10-05',end:'2026-10-11',phase:'Fundament',sets:2,firstTwo:3,rirMin:3,rirMax:3,note:'De eerste twee oefeningen krijgen 3 sets.'},
-  {n:3,start:'2026-10-12',end:'2026-10-18',phase:'Opbouw',sets:3,rirMin:2,rirMax:3,note:'Optioneel 10 min ligfiets na de kracht.'},
+  {n:3,start:'2026-10-12',end:'2026-10-18',phase:'Opbouw',sets:3,rirMin:2,rirMax:3,note:'Optioneel 10 min recumbent bike na de strength training.'},
   {n:4,start:'2026-10-19',end:'2026-10-25',phase:'Opbouw',sets:3,rirMin:2,rirMax:3,note:'Cardio mag naar 15 min. Druk met de herfstvakantie? Kies oranje.'},
   {n:5,start:'2026-10-26',end:'2026-11-01',phase:'Opbouw',sets:3,rirMin:2,rirMax:3,lastRir:2,note:'Laatste set op RIR 2.'},
-  {n:6,start:'2026-11-02',end:'2026-11-08',phase:'Herstelweek',sets:2,rirMin:3,rirMax:4,deload:true,note:'Zelfde gewichten, 1 set minder. Geen verhogingen deze week.'},
+  {n:6,start:'2026-11-02',end:'2026-11-08',phase:'Deload week',sets:2,rirMin:3,rirMax:4,deload:true,note:'Zelfde gewichten, 1 set minder. Geen verhogingen deze week.'},
   {n:7,start:'2026-11-09',end:'2026-11-15',phase:'Doorzetten',sets:3,rirMin:1,rirMax:2,lastRir:1,note:'Laatste set op RIR 1.'},
-  {n:8,start:'2026-11-16',end:'2026-11-22',phase:'Doorzetten',sets:3,rirMin:1,rirMax:2,lastRir:1,repPr:true,note:'Rep-record-week: laatste set van je hoofdlifts zo vaak mogelijk, stop bij nog 1 herhaling over.'},
+  {n:8,start:'2026-11-16',end:'2026-11-22',phase:'Doorzetten',sets:3,rirMin:1,rirMax:2,lastRir:1,repPr:true,note:'Rep PR week: laatste set van je main lifts zo vaak mogelijk, stop bij nog 1 rep over.'},
   {n:9,start:'2026-11-23',end:'2026-11-29',phase:'Vakantieweek',sets:2,rirMin:3,rirMax:3,maxSessions:2,note:'Maximaal 2 lichte trainingen. Fris op vakantie.'}
 ];
 const AFTER = {n:10,phase:'Na de vakantie',sets:3,rirMin:2,rirMax:3,lastRir:2,note:'Pak je ritme weer op. Eerste week op RIR 3.'};
@@ -133,20 +133,20 @@ const EXERCISES = {
   chestpress:{name:'Chest press machine',inc:2.5,main:true,alts:['db_bench']},
   cablerow:{name:'Seated cable row',inc:2.5,main:true,alts:['cs_row']},
   kuit:{name:'Calf raise (leg press)',inc:5,alts:['kuit_zit']},
-  deadbug:{name:'Dead bug',bw:true,unit:'per kant',alts:[]},
+  deadbug:{name:'Dead bug',bw:true,unit:'per side',alts:[]},
   hipthrust:{name:'Hip thrust',inc:5,main:true,alts:['glutebridge']},
   legext:{name:'Leg extension',inc:2.5,alts:[]},
   pulldown:{name:'Lat pulldown',inc:2.5,main:true,alts:['cablerow']},
   shoulder:{name:'Seated shoulder press (machine)',inc:2.5,alts:['db_shoulder']},
   curl:{name:'Seated biceps curl',inc:1,perHand:true,alts:['preacher']},
-  pallof:{name:'Seated Pallof press',inc:2.5,unit:'per kant',alts:[]},
+  pallof:{name:'Seated Pallof press',inc:2.5,unit:'per side',alts:[]},
   beenpers_c:{name:'Leg press (volume)',inc:5,alts:['hacksquat']},
   legcurl_zit:{name:'Seated leg curl',inc:2.5,alts:['legcurl_lig']},
   db_bench:{name:'Dumbbell bench press',inc:1,perHand:true,alts:['chestpress']},
   cs_row:{name:'Chest-supported row',inc:2.5,alts:['cablerow']},
   triceps:{name:'Triceps pushdown',inc:2.5,alts:[]},
   kuit_c:{name:'Calf raise (volume)',inc:5,alts:['kuit_zit']},
-  birddog:{name:'Bird dog',bw:true,unit:'per kant',alts:[]},
+  birddog:{name:'Bird dog',bw:true,unit:'per side',alts:[]},
   glutebridge:{name:'Glute bridge',inc:5,alts:[]},
   hacksquat:{name:'Hack squat',inc:5,alts:[]},
   kuit_zit:{name:'Seated calf raise',inc:5,alts:[]},
@@ -224,9 +224,11 @@ function migrate(s){
   s.exercises = Object.assign({}, d.exercises, s.exercises||{});
   s.days = s.days || d.days;
   // Namen komen altijd uit de code, zodat hernoemingen ook bestaande data bereiken.
-  for (const id in d.exercises) s.exercises[id].name = d.exercises[id].name;
+  for (const id in d.exercises){ s.exercises[id].name = d.exercises[id].name; s.exercises[id].unit = d.exercises[id].unit; }
+  const CARDIO = {Ligfiets:'Recumbent bike',Roeier:'Rower',Zwemmen:'Swimming',Wandelen:'Walking'};
   for (const code in d.days) if (s.days[code]) s.days[code].name = d.days[code].name;
   s.sessions = s.sessions || [];
+  s.sessions.forEach(x => { if (CARDIO[x.cardioType]) x.cardioType = CARDIO[x.cardioType]; });
   s.body = s.body || {};
   if (s.active && !s.sessions.find(x=>x.id===s.active)) s.active = null;
   return s;
@@ -293,7 +295,7 @@ function computeTargets(exId, cfg, week, n, status, excludeId){
     reps = Array(n).fill(repMax);
   } else if (!hist.length){
     first = true;
-    note = 'Eerste keer: kies een gewicht dat je '+repMin+'× kunt met nog '+(rirFor(week,0,n,status,false)??3)+' herhalingen over.';
+    note = 'Eerste keer: kies een gewicht dat je '+repMin+'× kunt met nog '+(rirFor(week,0,n,status,false)??3)+' reps over.';
   } else if (!dec.length){
     w = topW(hist[0].sets);
   } else {
@@ -306,7 +308,7 @@ function computeTargets(exId, cfg, week, n, status, excludeId){
     const failed = ls.some(x => x.r < repMin || x.rir===0);
     if (week.deload){
       reps = Array.from({length:n}, (_,i) => Math.min(repMax, Math.max(repMin, (ls[i]||ls[ls.length-1]).r)));
-      note = 'Herstelweek: zelfde gewicht, rustig aan.';
+      note = 'Deload week: zelfde weight, rustig aan.';
     } else if (allMax){
       w = r2(lw + ex.inc);
       note = 'Gewicht omhoog: alle sets op '+repMax+' gehaald.';
@@ -318,7 +320,7 @@ function computeTargets(exId, cfg, week, n, status, excludeId){
         w = r2(w);
         note = 'Twee keer te zwaar: 5% lichter.';
       } else {
-        note = 'Vorige keer zwaar: zelfde gewicht, doel '+repMin+' herhalingen.';
+        note = 'Vorige keer zwaar: zelfde gewicht, doel '+repMin+' reps.';
       }
     } else {
       reps = Array.from({length:n}, (_,i) => { const p = (ls[i]||ls[ls.length-1]).r; return Math.min(repMax, Math.max(repMin, p+1)); });
@@ -361,7 +363,7 @@ function startSession(status){
   let slots = day.items.map((c,i) => ({c,i}));
   if (status==='oranje') slots = slots.filter(x => !x.c.core).slice(0,4);
   const id = uid();
-  const s = {id, date:t, day:code, week:w.n, status, done:false, startedAt:Date.now(), cardioMin:null, cardioType:'Ligfiets', notes:'',
+  const s = {id, date:t, day:code, week:w.n, status, done:false, startedAt:Date.now(), cardioMin:null, cardioType:'Recumbent bike', notes:'',
     items: slots.map(({c,i}) => buildItem(c.ex, c.ex, c, w, status, i, id))};
   state.sessions.push(s); state.active = id; save(); render(); window.scrollTo(0,0);
 }
@@ -395,10 +397,10 @@ function tick(){
   el.hidden = false;
   const mm = Math.floor(left/60), ss = pad(left%60);
   if (left > 0){
-    el.innerHTML = `<div class="t">${mm}:${ss}</div><div class="m">${esc(timer.msg)}<br>Rustig opstaan: eerst zitten, kuitpompen, dan pas staan.</div><button data-a="t-plus">+30 s</button><button data-a="t-stop" aria-label="Timer stoppen">✕</button>`;
+    el.innerHTML = `<div class="t">${mm}:${ss}</div><div class="m">${esc(timer.msg)}<br>Rustig opstaan: eerst zitten, calf pumps, dan pas staan.</div><button data-a="t-plus">+30 s</button><button data-a="t-stop" aria-label="Timer stoppen">✕</button>`;
   } else {
     clearInterval(timer.int); timer.int = null;
-    el.innerHTML = `<div class="t">0:00</div><div class="m">Rust voorbij. ${esc(timer.msg)}.</div><button data-a="t-stop">OK</button>`;
+    el.innerHTML = `<div class="t">0:00</div><div class="m">Rest voorbij. ${esc(timer.msg)}.</div><button data-a="t-stop">OK</button>`;
     try { navigator.vibrate && navigator.vibrate([250,120,250]); } catch(e){}
     beep();
     setTimeout(() => { if (!timer.int) $('#timer').hidden = true; }, 6000);
@@ -466,7 +468,7 @@ function vHeader(){
 function exLabel(id){ const e = EXo(id); return e.name; }
 function targetTxt(ex, w, r, repPr){
   if (repPr) return (w!=null ? fmtN(w,2)+' kg' : '') + ' × max';
-  if (ex.bw) return r + ' ' + (ex.unit||'herh.');
+  if (ex.bw) return r + ' ' + (ex.unit||'reps');
   return (w!=null ? fmtN(w,2)+' kg' : '? kg') + ' × ' + r + (ex.perHand ? ' p/h' : '');
 }
 
@@ -485,7 +487,7 @@ function vHome(){
     const rows = d.items.map((c,i) => {
       const ex = EXo(c.ex), n = setsFor(w,i,c,'groen'), tg = computeTargets(c.ex, c, w, n, 'groen');
       const s0 = tg.sets[0];
-      return `<tr><td>${esc(ex.name)}</td><td>${n}×</td><td>${tg.first ? 'startgewicht' : esc(targetTxt(ex, s0.w, s0.r))}</td></tr>`;
+      return `<tr><td>${esc(ex.name)}</td><td>${n}×</td><td>${tg.first ? 'starting weight' : esc(targetTxt(ex, s0.w, s0.r))}</td></tr>`;
     }).join('');
     const doneWeek = state.sessions.filter(s => s.done && s.status!=='rood' && s.week===w.n).length;
     const cap = w.maxSessions && doneWeek >= w.maxSessions;
@@ -528,7 +530,7 @@ function vTrain(){
     const opts = [it.slot, ...(EXo(it.slot).alts||[])].filter((v,k,a)=>a.indexOf(v)===k);
     const swap = opts.length>1 && !it.sets.some(x=>x.done) ? `<select data-a="swap" data-i="${i}" aria-label="Oefening wisselen" style="margin-top:8px">${opts.map(o=>`<option value="${o}" ${o===it.ex?'selected':''}>${esc(exLabel(o))}</option>`).join('')}</select>` : '';
     h += `<div class="card ex ${it.skipped?'skipped':allDone?'complete':isActive?'active':''}">
-      <div class="ex-head"><div><h3>${esc(ex.name)}</h3><div class="muted small">${ex.bw ? it.repMax+' '+(ex.unit||'herh.') : it.repMin+'–'+it.repMax+' herh.'}${ex.unit&&!ex.bw?' '+ex.unit:''}, rust ${it.rest} s${ex.perHand?', gewicht per hand':''}</div></div>
+      <div class="ex-head"><div><h3>${esc(ex.name)}</h3><div class="muted small">${ex.bw ? it.repMax+' '+(ex.unit||'reps') : it.repMin+'–'+it.repMax+' reps'}${ex.unit&&!ex.bw?' '+ex.unit:''}, rest ${it.rest} s${ex.perHand?', weight per hand':''}</div></div>
       <button class="btn-ghost" data-a="skip" data-i="${i}">${it.skipped?'Toch doen':'Overslaan'}</button></div>
       ${it.note ? `<p class="muted small">${esc(it.note)}</p>` : ''}
       ${it.stagnant ? `<p class="small" style="color:var(--warn)">3 keer geen vooruitgang. Overweeg een lichtere week of een alternatief.</p>` : ''}
@@ -537,7 +539,7 @@ function vTrain(){
       let curShown = false;
       it.sets.forEach((x,j) => {
         if (x.done){
-          h += `<div class="setline"><span>Set ${j+1}: <b>${esc(targetTxt(ex, x.w, x.r))}</b>${x.rir!=null?' @ RIR '+x.rir:''} ${x.pr?'<span class="pill pr">Record</span>':''}</span><button class="btn-ghost" data-a="undo" data-i="${i}" data-j="${j}">Wijzig</button></div>`;
+          h += `<div class="setline"><span>Set ${j+1}: <b>${esc(targetTxt(ex, x.w, x.r))}</b>${x.rir!=null?' @ RIR '+x.rir:''} ${x.pr?'<span class="pill pr">PR</span>':''}</span><button class="btn-ghost" data-a="undo" data-i="${i}" data-j="${j}">Wijzig</button></div>`;
         } else if (!curShown && isActive){
           curShown = true;
           h += vCurrentSet(it, ex, x, i, j);
@@ -550,7 +552,7 @@ function vTrain(){
     h += `</div>`;
   });
   h += `<div class="card"><h3>Cardio (optioneel)</h3><div class="grid2"><div><label for="cmin">Minuten</label><input id="cmin" inputmode="numeric" data-a="cardio-min" value="${S.cardioMin??''}"></div>
-    <div><label for="ctype">Type</label><select id="ctype" data-a="cardio-type">${['Ligfiets','Roeier','Zwemmen','Wandelen'].map(o=>`<option ${o===S.cardioType?'selected':''}>${o}</option>`).join('')}</select></div></div>
+    <div><label for="ctype">Type</label><select id="ctype" data-a="cardio-type">${['Recumbent bike','Rower','Swimming','Walking'].map(o=>`<option ${o===S.cardioType?'selected':''}>${o}</option>`).join('')}</select></div></div>
     <p class="muted small">Praattest: je kunt nog hele zinnen praten.</p>
     <label for="notes" style="margin-top:8px">Notities</label><textarea id="notes" data-a="notes" placeholder="Stoelstand, klachten, gevoel">${esc(S.notes||'')}</textarea></div>
     <button class="btn-p btn-block" data-a="finish">Training afronden</button><p></p>
@@ -561,11 +563,11 @@ function vTrain(){
 function vCurrentSet(it, ex, x, i, j){
   const rirBtns = [0,1,2,3,4].map(v => `<button class="${x.rir===v?'on':''}" data-a="rir" data-i="${i}" data-j="${j}" data-v="${v}" aria-pressed="${x.rir===v}">${v}</button>`).join('');
   return `<div class="cur">
-    <div class="muted small">Set ${j+1} van ${it.sets.length}${x.repPr?': rep-record, zo vaak mogelijk tot RIR 1':''}</div>
-    <div class="target">${ex.bw ? x.tr+' <small>'+esc(ex.unit||'herh.')+'</small>' : (x.tw!=null?fmtN(x.tw,2):'?')+' <small>kg</small> × '+(x.repPr?'max':x.tr)}</div>
-    <div class="muted small" style="margin:4px 0 10px">${x.trir!=null ? 'Stop met nog '+x.trir+' herhaling'+(x.trir===1?'':'en')+' over (RIR '+x.trir+')' : 'Rustig en gecontroleerd'}</div>
-    ${ex.bw ? '' : `<label>Gewicht (kg${ex.perHand?' per hand':''})</label><div class="step"><button data-a="w-step" data-i="${i}" data-j="${j}" data-d="-1" aria-label="Minder gewicht">−</button><input inputmode="decimal" data-a="w-in" data-i="${i}" data-j="${j}" value="${x.w!=null?fmtN(x.w,2):''}" placeholder="kg"><button data-a="w-step" data-i="${i}" data-j="${j}" data-d="1" aria-label="Meer gewicht">+</button></div>`}
-    <label style="margin-top:8px">Herhalingen</label><div class="step"><button data-a="r-step" data-i="${i}" data-j="${j}" data-d="-1" aria-label="Minder herhalingen">−</button><input inputmode="numeric" data-a="r-in" data-i="${i}" data-j="${j}" value="${x.r??''}"><button data-a="r-step" data-i="${i}" data-j="${j}" data-d="1" aria-label="Meer herhalingen">+</button></div>
+    <div class="muted small">Set ${j+1} van ${it.sets.length}${x.repPr?': rep PR, zo vaak mogelijk tot RIR 1':''}</div>
+    <div class="target">${ex.bw ? x.tr+' <small>'+esc(ex.unit||'reps')+'</small>' : (x.tw!=null?fmtN(x.tw,2):'?')+' <small>kg</small> × '+(x.repPr?'max':x.tr)}</div>
+    <div class="muted small" style="margin:4px 0 10px">${x.trir!=null ? 'Stop met nog '+x.trir+' rep'+(x.trir===1?'':'s')+' over (RIR '+x.trir+')' : 'Rustig en gecontroleerd'}</div>
+    ${ex.bw ? '' : `<label>Weight (kg${ex.perHand?' per hand':''})</label><div class="step"><button data-a="w-step" data-i="${i}" data-j="${j}" data-d="-1" aria-label="Minder gewicht">−</button><input inputmode="decimal" data-a="w-in" data-i="${i}" data-j="${j}" value="${x.w!=null?fmtN(x.w,2):''}" placeholder="kg"><button data-a="w-step" data-i="${i}" data-j="${j}" data-d="1" aria-label="Meer gewicht">+</button></div>`}
+    <label style="margin-top:8px">Reps</label><div class="step"><button data-a="r-step" data-i="${i}" data-j="${j}" data-d="-1" aria-label="Minder reps">−</button><input inputmode="numeric" data-a="r-in" data-i="${i}" data-j="${j}" value="${x.r??''}"><button data-a="r-step" data-i="${i}" data-j="${j}" data-d="1" aria-label="Meer reps">+</button></div>
     ${ex.bw ? '' : `<label style="margin-top:8px">Hoeveel had je er nog gekund? (RIR)</label><div class="rir">${rirBtns}</div>`}
     <p></p><button class="btn-p btn-block" data-a="done" data-i="${i}" data-j="${j}">Set klaar ✓</button>
   </div>`;
@@ -575,24 +577,24 @@ function vPrecheck(){
   const w = weekFor(today()), code = nextDay();
   return `<h2>Dag ${code}: ${esc(state.days[code].name)}</h2>
   <div class="card"><h3>Voor je begint</h3>
-    ${['Gegeten, 1,5 tot 3 uur geleden','Water gedronken, bidon mee','Compressie aan (als afgesproken)','Warming-up: 5 tot 6 min ligfiets of roeier'].map(t=>`<label class="check"><input type="checkbox"> ${t}</label>`).join('')}
+    ${['Gegeten, 1,5 tot 3 uur geleden','Water gedronken, bidon mee','Compressie aan (als afgesproken)','Warm-up: 5 tot 6 min recumbent bike of rower'].map(t=>`<label class="check"><input type="checkbox"> ${t}</label>`).join('')}
   </div>
   <h3>Hoe voel je je vandaag?</h3>
   <div class="status">
     <button class="g" data-a="start" data-s="groen">Groen: normaal plan<span>${w.sets} sets, ${rirTxt(w)}</span></button>
     <button class="o" data-a="start" data-s="oranje">Oranje: lichter<span>Slecht geslapen of meer klachten. 4 oefeningen, 2 sets, RIR 3.</span></button>
-    <button class="r" data-a="start" data-s="rood">Rood: geen sportschool<span>Flinke klachten of ziek. Rust, of 10 min liggend thuis.</span></button>
+    <button class="r" data-a="start" data-s="rood">Rood: geen sportschool<span>Flinke klachten of ziek. Rest, of 10 min liggend thuis.</span></button>
   </div>`;
 }
 
 function vSummary(){
-  if (summary.rood) return `<div class="card"><h2>Rustdag genoteerd</h2><p>Goed dat je naar je lichaam luistert. Je volgende training blijft dezelfde dag in de rotatie.</p>
-    <h3>Optioneel: 10 min thuis, liggend</h3><p class="muted">2× 12 glute bridges, 2× 8 dead bugs per kant, 2× 20 calf pumps op de bank. Drink voldoende en eet genoeg eiwit.</p>
+  if (summary.rood) return `<div class="card"><h2>Rest day genoteerd</h2><p>Goed dat je naar je lichaam luistert. Je volgende training blijft dezelfde dag in de rotatie.</p>
+    <h3>Optioneel: 10 min thuis, liggend</h3><p class="muted">2× 12 glute bridges, 2× 8 dead bugs per side, 2× 20 calf pumps op de bank. Drink voldoende en eet genoeg eiwit.</p>
     <button class="btn-p btn-block" data-a="sum-close">Klaar</button></div>`;
   const s = summary;
   return `<div class="card"><h2>Dag ${s.day} afgerond</h2>
     <p><span class="stat">${s.sets}</span> sets &nbsp; <span class="stat">${fmtN(s.vol,0)}</span> kg volume${s.cardio?' &nbsp; <span class="stat">'+s.cardio+'</span> min cardio':''}</p>
-    ${s.prs.length ? `<p><span class="pill pr">Record</span> ${s.prs.map(esc).join(', ')}</p>` : ''}
+    ${s.prs.length ? `<p><span class="pill pr">PR</span> ${s.prs.map(esc).join(', ')}</p>` : ''}
     <h3 style="margin-top:12px">Volgende keer</h3>
     <div class="tbl-wrap"><table><tbody>${s.next.map(n=>`<tr><td>${esc(n.name)}</td><td>${esc(n.txt)}</td></tr>`).join('')}</tbody></table></div>
     <p></p><button class="btn-p btn-block" data-a="sum-close">Klaar</button></div>`;
@@ -660,9 +662,9 @@ function vProgress(){
     const diff = firstBest ? (best-firstBest)/firstBest*100 : 0;
     return `<tr><td>${esc(e.name)}</td><td>${fmtN(firstBest,1)}</td><td>${fmtN(best,1)}</td><td>${diff>0?'+':''}${fmtN(diff,0)}%</td></tr>`;
   }).join('');
-  h += `<div class="card"><h3>Hoofdlifts: geschatte max</h3>
-    ${mainRows ? `<div class="tbl-wrap"><table><thead><tr><th>Oefening</th><th>Start</th><th>Beste</th><th>Groei</th></tr></thead><tbody>${mainRows}</tbody></table></div>` : '<p class="muted">Na je eerste trainingen verschijnen hier je hoofdlifts.</p>'}
-    <p class="muted small">Geschat uit je gewone sets (gewicht, herhalingen en RIR). Je test nooit een echte 1RM.</p></div>`;
+  h += `<div class="card"><h3>Main lifts: geschatte max</h3>
+    ${mainRows ? `<div class="tbl-wrap"><table><thead><tr><th>Oefening</th><th>Start</th><th>Beste</th><th>Groei</th></tr></thead><tbody>${mainRows}</tbody></table></div>` : '<p class="muted">Na je eerste trainingen verschijnen hier je main lifts.</p>'}
+    <p class="muted small">Geschat uit je gewone sets (weight, reps en RIR). Je test nooit een echte 1RM.</p></div>`;
 
   // per exercise
   const withHist = Object.entries(state.exercises).filter(([id,e]) => !e.bw && doneHistory(id).length);
@@ -689,18 +691,18 @@ function vPlan(){
     ${WEEKS.map(w=>`<tr class="${w.n===cw?'cur-week':''}"><td>W${w.n}<div class="muted small">${fmtD(w.start)}</div></td><td>${esc(w.phase)}<div class="muted small">${esc(w.note)}</div></td><td>${w.firstTwo?w.firstTwo+'/':''}${w.sets}</td><td>${w.rirMin===w.rirMax?w.rirMin:w.rirMin+'–'+w.rirMax}${w.lastRir!=null?' (laatste '+w.lastRir+')':''}</td></tr>`).join('')}
     </tbody></table></div></div>`;
 
-  h += `<div class="card"><h3>Trainingsdagen</h3><p class="muted small">Pas rep-range, rust en stapgrootte aan als dat nodig is. Stapgrootte is de kleinste gewichtsstap op dat toestel.</p>`;
+  h += `<div class="card"><h3>Trainingsdagen</h3><p class="muted small">Pas rep range, rest en stapgrootte aan als dat nodig is. Stapgrootte is de kleinste gewichtsstap op dat toestel.</p>`;
   ROT.forEach(code => {
     const d = state.days[code];
     h += `<details ${code===nextDay()?'open':''}><summary>Dag ${code}: ${esc(d.name)}</summary>`;
     d.items.forEach((c,k) => {
       const ex = EXo(c.ex);
-      h += `<div><b>${esc(ex.name)}</b>${ex.main?' <span class="pill">hoofdlift</span>':''}${c.core?' <span class="pill">romp</span>':''}
+      h += `<div><b>${esc(ex.name)}</b>${ex.main?' <span class="pill">main lift</span>':''}${c.core?' <span class="pill">core</span>':''}
         ${ex.alts&&ex.alts.length?`<div class="muted small">Alternatief: ${ex.alts.map(a=>esc(exLabel(a))).join(', ')}</div>`:''}
         <div class="cfg">
           <div><label>Min</label><input inputmode="numeric" data-a="cfg" data-d="${code}" data-k="${k}" data-f="repMin" value="${c.repMin}"></div>
           <div><label>Max</label><input inputmode="numeric" data-a="cfg" data-d="${code}" data-k="${k}" data-f="repMax" value="${c.repMax}"></div>
-          <div><label>Rust (s)</label><input inputmode="numeric" data-a="cfg" data-d="${code}" data-k="${k}" data-f="rest" value="${c.rest}"></div>
+          <div><label>Rest (s)</label><input inputmode="numeric" data-a="cfg" data-d="${code}" data-k="${k}" data-f="rest" value="${c.rest}"></div>
           <div><label>Stap (kg)</label><input inputmode="decimal" data-a="ex-inc" data-e="${c.ex}" value="${ex.bw?'–':fmtN(ex.inc,2)}" ${ex.bw?'disabled':''}></div>
         </div></div>`;
     });
@@ -752,7 +754,7 @@ function finish(){
     const cfg = {repMin:it.repMin, repMax:it.repMax, core:it.core};
     const t = computeTargets(it.ex, cfg, w, Math.max(1, setsFor(w, i, cfg, 'groen')), 'groen');
     const uniq = [...new Set(t.sets.map(x=>x.r))];
-    next.push({name:ex.name, txt: t.first ? 'Startgewicht kiezen' : ex.bw ? t.sets[0].r+' '+(ex.unit||'herh.') : fmtN(t.sets[0].w,2)+' kg × '+uniq.join('/')});
+    next.push({name:ex.name, txt: t.first ? 'Starting weight kiezen' : ex.bw ? t.sets[0].r+' '+(ex.unit||'reps') : fmtN(t.sets[0].w,2)+' kg × '+uniq.join('/')});
   });
   summary = {day:S.day, sets, vol, prs, next, cardio:S.cardioMin};
   save(); render(); window.scrollTo(0,0);
@@ -849,10 +851,10 @@ function doneSet(S,i,j){
   ensureAudio();
   const it = S.items[i], ex = EXo(it.ex), set = it.sets[j];
   if (!ex.bw && !(set.w>0)){ toast('Vul eerst een gewicht in'); return; }
-  if (!(set.r>0)){ toast('Vul het aantal herhalingen in'); return; }
+  if (!(set.r>0)){ toast('Vul het aantal reps in'); return; }
   const prev = ex.bw ? 0 : bestE1(it.ex, set);
   set.done = true;
-  if (!ex.bw){ const v = e1(set); if (prev>0 && v > prev + 0.05){ set.pr = true; toast('Nieuw record op '+ex.name+'!'); } }
+  if (!ex.bw){ const v = e1(set); if (prev>0 && v > prev + 0.05){ set.pr = true; toast('Nieuwe PR op '+ex.name+'!'); } }
   save();
   const remaining = S.items.some((x,k) => !x.skipped && x.sets.some((y,l) => !y.done && !(k===i && l===j)));
   if (remaining) startTimer(it.rest, j < it.sets.length-1 ? 'Volgende set' : 'Volgende oefening');
