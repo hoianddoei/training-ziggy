@@ -128,41 +128,41 @@ const WEEKS = [
 const AFTER = {n:10,phase:'Na de vakantie',sets:3,rirMin:2,rirMax:3,lastRir:2,note:'Pak je ritme weer op. Eerste week op RIR 3.'};
 
 const EXERCISES = {
-  legcurl_lig:{name:'Liggende leg curl',inc:2.5,alts:['glutebridge']},
-  beenpers:{name:'Beenpers',inc:5,main:true,alts:['hacksquat']},
+  legcurl_lig:{name:'Lying leg curl',inc:2.5,alts:['glutebridge']},
+  beenpers:{name:'Leg press',inc:5,main:true,alts:['hacksquat']},
   chestpress:{name:'Chest press machine',inc:2.5,main:true,alts:['db_bench']},
   cablerow:{name:'Seated cable row',inc:2.5,main:true,alts:['cs_row']},
-  kuit:{name:'Kuitheffen (beenpers)',inc:5,alts:['kuit_zit']},
+  kuit:{name:'Calf raise (leg press)',inc:5,alts:['kuit_zit']},
   deadbug:{name:'Dead bug',bw:true,unit:'per kant',alts:[]},
   hipthrust:{name:'Hip thrust',inc:5,main:true,alts:['glutebridge']},
   legext:{name:'Leg extension',inc:2.5,alts:[]},
   pulldown:{name:'Lat pulldown',inc:2.5,main:true,alts:['cablerow']},
-  shoulder:{name:'Zittende shoulder press (machine)',inc:2.5,alts:['db_shoulder']},
-  curl:{name:'Biceps curl (zittend)',inc:1,perHand:true,alts:['preacher']},
-  pallof:{name:'Pallof press (zittend)',inc:2.5,unit:'per kant',alts:[]},
-  beenpers_c:{name:'Beenpers (volume)',inc:5,alts:['hacksquat']},
-  legcurl_zit:{name:'Zittende leg curl',inc:2.5,alts:['legcurl_lig']},
+  shoulder:{name:'Seated shoulder press (machine)',inc:2.5,alts:['db_shoulder']},
+  curl:{name:'Seated biceps curl',inc:1,perHand:true,alts:['preacher']},
+  pallof:{name:'Seated Pallof press',inc:2.5,unit:'per kant',alts:[]},
+  beenpers_c:{name:'Leg press (volume)',inc:5,alts:['hacksquat']},
+  legcurl_zit:{name:'Seated leg curl',inc:2.5,alts:['legcurl_lig']},
   db_bench:{name:'Dumbbell bench press',inc:1,perHand:true,alts:['chestpress']},
   cs_row:{name:'Chest-supported row',inc:2.5,alts:['cablerow']},
   triceps:{name:'Triceps pushdown',inc:2.5,alts:[]},
-  kuit_c:{name:'Kuitheffen (volume)',inc:5,alts:['kuit_zit']},
+  kuit_c:{name:'Calf raise (volume)',inc:5,alts:['kuit_zit']},
   birddog:{name:'Bird dog',bw:true,unit:'per kant',alts:[]},
   glutebridge:{name:'Glute bridge',inc:5,alts:[]},
   hacksquat:{name:'Hack squat',inc:5,alts:[]},
   kuit_zit:{name:'Seated calf raise',inc:5,alts:[]},
-  db_shoulder:{name:'Zittende dumbbell press',inc:1,perHand:true,alts:[]},
+  db_shoulder:{name:'Seated dumbbell shoulder press',inc:1,perHand:true,alts:[]},
   preacher:{name:'Preacher curl',inc:2.5,alts:[]}
 };
 
 const DAYS = {
-  A:{name:'Benen + duwen',items:[
+  A:{name:'Legs + push',items:[
     {ex:'legcurl_lig',repMin:10,repMax:12,rest:90},
     {ex:'beenpers',repMin:10,repMax:12,rest:120},
     {ex:'chestpress',repMin:8,repMax:12,rest:120},
     {ex:'cablerow',repMin:10,repMax:12,rest:90},
     {ex:'kuit',repMin:12,repMax:15,rest:60},
     {ex:'deadbug',repMin:8,repMax:8,rest:60,core:true}]},
-  B:{name:'Bil/hamstring + trekken',items:[
+  B:{name:'Glutes/hamstrings + pull',items:[
     {ex:'hipthrust',repMin:10,repMax:12,rest:90},
     {ex:'legext',repMin:12,repMax:15,rest:90},
     {ex:'pulldown',repMin:10,repMax:12,rest:90},
@@ -223,6 +223,9 @@ function migrate(s){
   const d = seed();
   s.exercises = Object.assign({}, d.exercises, s.exercises||{});
   s.days = s.days || d.days;
+  // Namen komen altijd uit de code, zodat hernoemingen ook bestaande data bereiken.
+  for (const id in d.exercises) s.exercises[id].name = d.exercises[id].name;
+  for (const code in d.days) if (s.days[code]) s.days[code].name = d.days[code].name;
   s.sessions = s.sessions || [];
   s.body = s.body || {};
   if (s.active && !s.sessions.find(x=>x.id===s.active)) s.active = null;
@@ -584,7 +587,7 @@ function vPrecheck(){
 
 function vSummary(){
   if (summary.rood) return `<div class="card"><h2>Rustdag genoteerd</h2><p>Goed dat je naar je lichaam luistert. Je volgende training blijft dezelfde dag in de rotatie.</p>
-    <h3>Optioneel: 10 min thuis, liggend</h3><p class="muted">2× 12 glute bridges, 2× 8 dead bugs per kant, 2× 20 kuitpompen op de bank. Drink voldoende en eet genoeg eiwit.</p>
+    <h3>Optioneel: 10 min thuis, liggend</h3><p class="muted">2× 12 glute bridges, 2× 8 dead bugs per kant, 2× 20 calf pumps op de bank. Drink voldoende en eet genoeg eiwit.</p>
     <button class="btn-p btn-block" data-a="sum-close">Klaar</button></div>`;
   const s = summary;
   return `<div class="card"><h2>Dag ${s.day} afgerond</h2>
