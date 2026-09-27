@@ -221,7 +221,7 @@ const rirTxt = w => w.rirMin===w.rirMax ? 'RIR '+w.rirMin : 'RIR '+w.rirMin+'–
 /* ========= State ========= */
 let storageOk = true;
 function seed(){
-  return {v:1, exercises:JSON.parse(JSON.stringify(EXERCISES)), days:JSON.parse(JSON.stringify(DAYS)), sessions:[], body:{}, active:null, lastExport:null};
+  return {v:1, exercises:JSON.parse(JSON.stringify(EXERCISES)), days:JSON.parse(JSON.stringify(DAYS)), sessions:[], body:{}, food:{checks:{}}, active:null, lastExport:null};
 }
 function load(){
   try {
@@ -246,6 +246,7 @@ function migrate(s){
   s.sessions = s.sessions || [];
   s.sessions.forEach(x => { if (CARDIO[x.cardioType]) x.cardioType = CARDIO[x.cardioType]; });
   s.body = s.body || {};
+  s.food = s.food || {checks:{}};
   if (s.active && !s.sessions.find(x=>x.id===s.active)) s.active = null;
   return s;
 }
@@ -741,15 +742,109 @@ function vPlan(){
   return h;
 }
 
+
+/* ========= Eten ========= */
+const PROTEIN_SOURCES = [
+  ['Vlees en vis', [
+    ['Kipfilet (gegaard)','31 g','150 g = 46 g'],
+    ['Kalkoenfilet (gegaard)','30 g','150 g = 45 g'],
+    ['Mager rundergehakt (max 5% vet)','21 g','200 g = 42 g'],
+    ['Biefstuk / runderreepjes','22 g','150 g = 33 g'],
+    ['Tonijn in water (blik)','25 g','1 blik = 28 g'],
+    ['Zalm','20 g','150 g = 30 g'],
+    ['Kabeljauw / witvis','18 g','200 g = 36 g'],
+    ['Garnalen','20 g','150 g = 30 g'],
+    ['Kipfilet / rosbief als beleg','20 g','50 g = 10 g']]],
+  ['Zuivel en eieren', [
+    ['Magere kwark','9 g','250 g = 23 g'],
+    ['Skyr','11 g','250 g = 27 g'],
+    ['Griekse yoghurt 0–2%','8–10 g','250 g = 22 g'],
+    ['Hüttenkäse (cottage cheese)','11 g','200 g = 22 g'],
+    ['Eieren','13 g','1 ei = 7 g'],
+    ['Kaas 30+','28 g','2 plakken = 11 g'],
+    ['Whey (1 schep, 30 g)','75–80 g','1 schep = 23 g']]],
+  ['Plantaardig', [
+    ['Tempeh','19 g','150 g = 29 g'],
+    ['Tofu (stevig)','13 g','200 g = 26 g'],
+    ['Edamame','11 g','150 g = 17 g'],
+    ['Linzen (gekookt)','9 g','200 g = 18 g'],
+    ['Kidneybonen / zwarte bonen (blik)','8 g','200 g = 16 g'],
+    ['Kikkererwten (blik)','7 g','200 g = 14 g']]],
+  ['Snacks', [
+    ['Beef jerky','35–40 g','50 g = 18 g'],
+    ['Eiwitpudding / eiwitdrink (per portie)','–','1 stuk = 20–25 g'],
+    ['Pinda’s / noten (let op: veel kcal)','20–25 g','30 g = 7 g']]]
+];
+const SHOPPING = [
+  ['Koeling', ['Griekse yoghurt 2%','Magere kwark of skyr','Hüttenkäse','Eieren','Kipfilet of kalkoenfilet','Mager rundergehakt','Zalm of witvis','Kipfilet / rosbief beleg','Tofu of tempeh','Eiwitpudding of eiwitdrink']],
+  ['Houdbaar', ['Whey','Havervlokken','Lijnzaad','Tonijn in water (blik)','Bonen / linzen / kikkererwten (blik)','Volkoren brood of wraps','Rijst, volkoren pasta of krieltjes','Beef jerky']],
+  ['Groente en fruit', ['Broccoli / sperziebonen','Wokgroente of spinazie','Komkommer, tomaat, paprika','Blauwe bessen / frambozen (ook diepvries)','Banaan']],
+  ['Diepvries', ['Edamame','Garnalen','Groentemix']]
+];
+const MEALS = [
+  ['Ontbijt', [['Jouw vaste ontbijt: 250 g Griekse yoghurt 2%, 1 schep whey, 40 g havervlokken, 15 g lijnzaad','±50 g'],
+    ['Omelet van 3 eieren met 50 g ham en spinazie + 1 volkoren boterham','±32 g']]],
+  ['Lunch', [['Wrap met 1 blik tonijn, yoghurtsaus, sla en tomaat','±35 g'],
+    ['3 volkoren boterhammen met kipfilet + hüttenkäse','±35 g'],
+    ['Salade met 150 g kip, kikkererwten en feta','±45 g']]],
+  ['Tussendoor / na de training', [['250 g magere kwark of skyr met bessen','±25 g'],
+    ['Eiwitshake: 1 schep whey in water of melk','±23–30 g'],
+    ['2 gekookte eieren + 30 g beef jerky','±25 g'],
+    ['200 g hüttenkäse met komkommer en paprika','±22 g']]],
+  ['Avondeten', [['200 g kipfilet met rijst en broccoli','±50 g'],
+    ['Chili: 200 g mager gehakt, kidneybonen, paprika','±55 g'],
+    ['150 g zalm met krieltjes en sperziebonen','±33 g'],
+    ['Wok met 200 g tempeh, edamame en groente','±45 g'],
+    ['Pasta met 150 g garnalen, tomatensaus en spinazie','±40 g']]],
+  ['Avond (optioneel)', [['250 g magere kwark (verzadigt, eiwit voor de nacht)','±23 g']]]
+];
+function vFood(){
+  const checks = state.food.checks;
+  let h = `<h2>Eten</h2>
+  <div class="card"><h3>Jouw eiwitdoel</h3>
+    <p>Bij ±90 kg: <b>145–180 g eiwit per dag</b> (1,6–2 g per kg). Mik op <b>±160 g</b>, verdeeld over 4 momenten van 30–50 g.</p>
+    <p class="muted small">Afvallen rond de buik gaat via een klein calorietekort (±300–500 kcal per dag). Veel eiwit zorgt dat je spieren behoudt en opbouwt en dat je minder snel honger hebt.</p></div>
+  <div class="card"><h3>Voorbeelddag: ±175 g</h3><div class="tbl-wrap"><table><tbody>
+    <tr><td>Ontbijt</td><td>Jouw yoghurt met whey, haver en lijnzaad</td><td style="white-space:nowrap">50 g</td></tr>
+    <tr><td>Lunch</td><td>Tonijnwrap</td><td style="white-space:nowrap">35 g</td></tr>
+    <tr><td>Na training</td><td>Kwark of skyr met bessen</td><td style="white-space:nowrap">25 g</td></tr>
+    <tr><td>Avondeten</td><td>Kip met rijst en broccoli</td><td style="white-space:nowrap">50 g</td></tr>
+    <tr><td>Avond</td><td>Hüttenkäse of kwark</td><td style="white-space:nowrap">20 g</td></tr>
+  </tbody></table></div><p class="muted small">Je ontbijt levert al ongeveer een derde van je dagdoel. Goed bezig!</p></div>
+  <div class="card"><h3>Maaltijdideeën</h3>`;
+  for (const [moment, list] of MEALS){
+    h += `<details ${moment==='Lunch'?'open':''}><summary>${moment}</summary><div class="tbl-wrap"><table><tbody>${list.map(([m,p])=>`<tr><td>${m}</td><td style="white-space:nowrap">${p}</td></tr>`).join('')}</tbody></table></div></details>`;
+  }
+  h += `</div><div class="card"><h3>Waar zit veel eiwit in?</h3><p class="muted small">Eiwit per 100 g en per normale portie. Het etiket geeft de exacte waarde.</p>`;
+  for (const [cat, list] of PROTEIN_SOURCES){
+    h += `<details ${cat==='Vlees en vis'?'open':''}><summary>${cat}</summary><div class="tbl-wrap"><table><thead><tr><th>Product</th><th>per 100 g</th><th>portie</th></tr></thead><tbody>${list.map(([n,a,b])=>`<tr><td>${n}</td><td>${a}</td><td>${b}</td></tr>`).join('')}</tbody></table></div></details>`;
+  }
+  const nChecked = Object.values(checks).filter(Boolean).length;
+  h += `</div><div class="card"><h3>Boodschappenlijst</h3><p class="muted small">Vink af wat in je mandje ligt. ${nChecked} afgevinkt.</p>`;
+  for (const [cat, list] of SHOPPING){
+    h += `<h3 style="margin-top:10px">${cat}</h3>${list.map(it=>`<label class="check"><input type="checkbox" data-a="shop" data-k="${esc(it)}" ${checks[it]?'checked':''}> ${esc(it)}</label>`).join('')}`;
+  }
+  h += `<p></p><button class="btn-block" data-a="shop-reset">Lijst leegmaken</button></div>
+  <div class="card"><h3>Tips</h3><ul class="small">
+    <li>Eiwit bij elke maaltijd; begin je bord met eiwit en groente.</li>
+    <li>Binnen een paar uur na de training een eiwitrijke maaltijd of shake.</li>
+    <li>Kies magere varianten (kwark, skyr, 5%-gehakt) voor veel eiwit per calorie.</li>
+    <li>Noten, pindakaas en kaas zijn prima, maar calorierijk: met mate.</li>
+    <li>Drink 2–3 liter water per dag, meer op trainingsdagen.</li>
+    <li>Kijk op het etiket naar "eiwit per 100 g"; boven de 10 g is een goede bron.</li>
+  </ul></div>`;
+  return h;
+}
+
 function vNav(){
-  const tabs = [['home','Vandaag'],['train','Training'],['body','Lichaam'],['progress','Voortgang'],['plan','Plan']];
+  const tabs = [['home','Vandaag'],['train','Training'],['body','Lichaam'],['progress','Voortgang'],['food','Eten'],['plan','Plan']];
   return tabs.map(([k,l]) => `<button data-a="tab" data-t="${k}" class="${tab===k?'on':''}" ${tab===k?'aria-current="page"':''}>${l}</button>`).join('');
 }
 
 function render(){
   $('#top').innerHTML = vHeader();
   $('#nav').innerHTML = vNav();
-  const v = {home:vHome, train:vTrain, body:vBody, progress:vProgress, plan:vPlan}[tab];
+  const v = {home:vHome, train:vTrain, body:vBody, progress:vProgress, food:vFood, plan:vPlan}[tab];
   $('#view').innerHTML = v();
 }
 
@@ -803,6 +898,7 @@ document.addEventListener('click', e => {
   const S = activeSession();
   const set = S && S.items[i] ? S.items[i].sets[j] : null;
   switch (a){
+    case 'shop-reset': if (confirm('Boodschappenlijst leegmaken?')){ state.food.checks = {}; save(); render(); } break;
     case 'tab': tab = b.dataset.t; if (tab!=='train') summary = summary && summary.rood ? null : summary; render(); window.scrollTo(0,0); break;
     case 'go-train': tab = 'train'; render(); window.scrollTo(0,0); break;
     case 'start': ensureAudio(); startSession(b.dataset.s); break;
@@ -853,6 +949,7 @@ document.addEventListener('change', e => {
     case 'cardio-min': if (S){ S.cardioMin = num(t.value); save(); } break;
     case 'cardio-type': if (S){ S.cardioType = t.value; save(); } break;
     case 'notes': if (S){ S.notes = t.value; save(); } break;
+    case 'shop': state.food.checks[t.dataset.k] = t.checked; save(); render(); break;
     case 'body-date': bodyDate = t.value || null; render(); break;
     case 'prog-ex': progEx = t.value; render(); break;
     case 'cfg': { const c = state.days[t.dataset.d].items[+t.dataset.k]; const v = parseInt(t.value,10); if (!isNaN(v) && v>0){ c[t.dataset.f] = v; if (c.repMin > c.repMax) c.repMax = c.repMin; save(); } render(); break; }

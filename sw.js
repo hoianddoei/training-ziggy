@@ -1,6 +1,6 @@
 // Vakantie Fit service worker: maakt de app offline bruikbaar.
 // Verhoog VERSION bij elke update van index.html, zodat telefoons de nieuwe versie ophalen.
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = 'vakantiefit-' + VERSION;
 const ASSETS = [
   './',
