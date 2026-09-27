@@ -115,10 +115,10 @@ const PHOTO_DAYS = ['2026-09-27','2026-10-11','2026-10-25','2026-11-08','2026-11
 
 const WEEKS = [
   {n:0,start:'2026-09-23',end:'2026-09-27',phase:'Start',sets:2,rirMin:4,rirMax:4,maxSessions:1,note:'1 training deze week. Kennismaken: stel de machines in en vind je starting weights.'},
-  {n:1,start:'2026-09-28',end:'2026-10-04',phase:'Fundament',sets:2,rirMin:3,rirMax:3,note:'Techniek eerst. Uitademen bij duwen, rustig opstaan.'},
+  {n:1,start:'2026-09-28',end:'2026-10-04',phase:'Fundament',sets:2,rirMin:3,rirMax:3,note:'Techniek eerst. Uitademen bij duwen, rustig opstaan. Sluit af met 10 min cardio.'},
   {n:2,start:'2026-10-05',end:'2026-10-11',phase:'Fundament',sets:2,firstTwo:3,rirMin:3,rirMax:3,note:'De eerste twee oefeningen krijgen 3 sets.'},
-  {n:3,start:'2026-10-12',end:'2026-10-18',phase:'Opbouw',sets:3,rirMin:2,rirMax:3,note:'Optioneel 10 min recumbent bike na de strength training.'},
-  {n:4,start:'2026-10-19',end:'2026-10-25',phase:'Opbouw',sets:3,rirMin:2,rirMax:3,note:'Cardio mag naar 15 min. Druk met de herfstvakantie? Kies oranje.'},
+  {n:3,start:'2026-10-12',end:'2026-10-18',phase:'Opbouw',sets:3,rirMin:2,rirMax:3,note:'Cardio na de kracht naar 15 min.'},
+  {n:4,start:'2026-10-19',end:'2026-10-25',phase:'Opbouw',sets:3,rirMin:2,rirMax:3,note:'Cardio 15–20 min. Druk met de herfstvakantie? Kies oranje.'},
   {n:5,start:'2026-10-26',end:'2026-11-01',phase:'Opbouw',sets:3,rirMin:2,rirMax:3,lastRir:2,note:'Laatste set op RIR 2.'},
   {n:6,start:'2026-11-02',end:'2026-11-08',phase:'Deload week',sets:2,rirMin:3,rirMax:4,deload:true,note:'Zelfde gewichten, 1 set minder. Geen verhogingen deze week.'},
   {n:7,start:'2026-11-09',end:'2026-11-15',phase:'Doorzetten',sets:3,rirMin:1,rirMax:2,lastRir:1,note:'Laatste set op RIR 1.'},
@@ -128,30 +128,36 @@ const WEEKS = [
 const AFTER = {n:10,phase:'Na de vakantie',sets:3,rirMin:2,rirMax:3,lastRir:2,note:'Pak je ritme weer op. Eerste week op RIR 3.'};
 
 const EXERCISES = {
-  legcurl_lig:{name:'Lying leg curl',inc:2.5,alts:['glutebridge']},
-  beenpers:{name:'Leg press',inc:5,main:true,alts:['hacksquat']},
-  chestpress:{name:'Chest press machine',inc:2.5,main:true,alts:['db_bench']},
-  cablerow:{name:'Seated cable row',inc:2.5,main:true,alts:['cs_row']},
-  kuit:{name:'Calf raise (leg press)',inc:5,alts:['kuit_zit']},
+  legcurl_lig:{name:'Lying leg curl',start:25,inc:2.5,alts:['glutebridge']},
+  beenpers:{name:'Leg press',start:80,inc:5,main:true,alts:['hacksquat']},
+  chestpress:{name:'Chest press machine',start:35,inc:2.5,main:true,alts:['db_bench']},
+  cablerow:{name:'Seated cable row',start:35,inc:2.5,main:true,alts:['cs_row']},
+  kuit:{name:'Calf raise (leg press)',start:60,inc:5,alts:['kuit_zit']},
   deadbug:{name:'Dead bug',bw:true,unit:'per side',alts:[]},
-  hipthrust:{name:'Hip thrust',inc:5,main:true,alts:['glutebridge']},
-  legext:{name:'Leg extension',inc:2.5,alts:[]},
-  pulldown:{name:'Lat pulldown',inc:2.5,main:true,alts:['cablerow']},
-  shoulder:{name:'Seated shoulder press (machine)',inc:2.5,alts:['db_shoulder']},
-  curl:{name:'Seated biceps curl',inc:1,perHand:true,alts:['preacher']},
-  pallof:{name:'Seated Pallof press',inc:2.5,unit:'per side',alts:[]},
-  beenpers_c:{name:'Leg press (volume)',inc:5,alts:['hacksquat']},
-  legcurl_zit:{name:'Seated leg curl',inc:2.5,alts:['legcurl_lig']},
-  db_bench:{name:'Dumbbell bench press',inc:1,perHand:true,alts:['chestpress']},
-  cs_row:{name:'Chest-supported row',inc:2.5,alts:['cablerow']},
-  triceps:{name:'Triceps pushdown',inc:2.5,alts:[]},
-  kuit_c:{name:'Calf raise (volume)',inc:5,alts:['kuit_zit']},
+  hipthrust:{name:'Hip thrust',start:40,inc:5,main:true,alts:['glutebridge']},
+  legext:{name:'Leg extension',start:30,inc:2.5,alts:[]},
+  pulldown:{name:'Lat pulldown',start:40,inc:2.5,main:true,alts:['cablerow']},
+  shoulder:{name:'Seated shoulder press (machine)',start:25,inc:2.5,alts:['db_shoulder']},
+  curl:{name:'Seated biceps curl',start:10,inc:1,perHand:true,alts:['preacher']},
+  pallof:{name:'Seated Pallof press',start:10,inc:2.5,unit:'per side',alts:[]},
+  beenpers_c:{name:'Leg press (volume)',start:60,inc:5,alts:['hacksquat']},
+  legcurl_zit:{name:'Seated leg curl',start:30,inc:2.5,alts:['legcurl_lig']},
+  db_bench:{name:'Dumbbell bench press',start:18,inc:1,perHand:true,alts:['chestpress']},
+  cs_row:{name:'Chest-supported row',start:30,inc:2.5,alts:['cablerow']},
+  triceps:{name:'Triceps pushdown',start:20,inc:2.5,alts:[]},
+  kuit_c:{name:'Calf raise (volume)',start:60,inc:5,alts:['kuit_zit']},
   birddog:{name:'Bird dog',bw:true,unit:'per side',alts:[]},
-  glutebridge:{name:'Glute bridge',inc:5,alts:[]},
-  hacksquat:{name:'Hack squat',inc:5,alts:[]},
-  kuit_zit:{name:'Seated calf raise',inc:5,alts:[]},
-  db_shoulder:{name:'Seated dumbbell shoulder press',inc:1,perHand:true,alts:[]},
-  preacher:{name:'Preacher curl',inc:2.5,alts:[]}
+  glutebridge:{name:'Glute bridge',start:30,inc:5,alts:[]},
+  hacksquat:{name:'Hack squat',start:20,inc:5,alts:[]},
+  kuit_zit:{name:'Seated calf raise',start:20,inc:5,alts:[]},
+  db_shoulder:{name:'Seated dumbbell shoulder press',start:12,inc:1,perHand:true,alts:[]},
+  preacher:{name:'Preacher curl',start:20,inc:2.5,alts:[]},
+  lateral:{name:'Dumbbell lateral raise',start:6,inc:1,perHand:true,alts:['cable_lateral']},
+  cable_lateral:{name:'Cable lateral raise',start:5,inc:1.25,alts:[]},
+  oh_triceps:{name:'Overhead cable triceps extension',start:15,inc:2.5,alts:['triceps']},
+  facepull:{name:'Face pull',start:15,inc:2.5,alts:['rear_delt']},
+  rear_delt:{name:'Reverse fly machine',start:25,inc:2.5,alts:[]},
+  hammer:{name:'Hammer curl',start:12,inc:1,perHand:true,alts:['curl']}
 };
 
 const DAYS = {
@@ -160,6 +166,8 @@ const DAYS = {
     {ex:'beenpers',repMin:10,repMax:12,rest:120},
     {ex:'chestpress',repMin:8,repMax:12,rest:120},
     {ex:'cablerow',repMin:10,repMax:12,rest:90},
+    {ex:'lateral',repMin:12,repMax:15,rest:60},
+    {ex:'oh_triceps',repMin:10,repMax:12,rest:60},
     {ex:'kuit',repMin:12,repMax:15,rest:60},
     {ex:'deadbug',repMin:8,repMax:8,rest:60,core:true}]},
   B:{name:'Glutes/hamstrings + pull',items:[
@@ -167,14 +175,18 @@ const DAYS = {
     {ex:'legext',repMin:12,repMax:15,rest:90},
     {ex:'pulldown',repMin:10,repMax:12,rest:90},
     {ex:'shoulder',repMin:8,repMax:12,rest:120},
+    {ex:'lateral',repMin:12,repMax:15,rest:60},
     {ex:'curl',repMin:10,repMax:12,rest:60},
+    {ex:'facepull',repMin:12,repMax:15,rest:60},
     {ex:'pallof',repMin:10,repMax:12,rest:60,core:true}]},
   C:{name:'Volume',items:[
     {ex:'beenpers_c',repMin:15,repMax:20,rest:90},
     {ex:'legcurl_zit',repMin:12,repMax:15,rest:60},
     {ex:'db_bench',repMin:10,repMax:12,rest:90},
     {ex:'cs_row',repMin:10,repMax:12,rest:90},
+    {ex:'lateral',repMin:12,repMax:15,rest:60},
     {ex:'triceps',repMin:12,repMax:15,rest:60},
+    {ex:'hammer',repMin:10,repMax:12,rest:60},
     {ex:'kuit_c',repMin:15,repMax:20,rest:60},
     {ex:'birddog',repMin:8,repMax:8,rest:60,core:true}]}
 };
@@ -224,9 +236,13 @@ function migrate(s){
   s.exercises = Object.assign({}, d.exercises, s.exercises||{});
   s.days = s.days || d.days;
   // Namen komen altijd uit de code, zodat hernoemingen ook bestaande data bereiken.
-  for (const id in d.exercises){ s.exercises[id].name = d.exercises[id].name; s.exercises[id].unit = d.exercises[id].unit; }
+  for (const id in d.exercises){ s.exercises[id].name = d.exercises[id].name; s.exercises[id].unit = d.exercises[id].unit; s.exercises[id].start = d.exercises[id].start; }
   const CARDIO = {Ligfiets:'Recumbent bike',Roeier:'Rower',Zwemmen:'Swimming',Wandelen:'Walking'};
-  for (const code in d.days) if (s.days[code]) s.days[code].name = d.days[code].name;
+  for (const code in d.days) if (s.days[code]){
+    const day = s.days[code]; day.name = d.days[code].name;
+    // Nieuwe oefeningen uit het schema toevoegen op hun plek; eigen instellingen blijven staan.
+    d.days[code].items.forEach((c,i) => { if (!day.items.some(x => x.ex===c.ex)) day.items.splice(Math.min(i, day.items.length), 0, c); });
+  }
   s.sessions = s.sessions || [];
   s.sessions.forEach(x => { if (CARDIO[x.cardioType]) x.cardioType = CARDIO[x.cardioType]; });
   s.body = s.body || {};
@@ -295,7 +311,8 @@ function computeTargets(exId, cfg, week, n, status, excludeId){
     reps = Array(n).fill(repMax);
   } else if (!hist.length){
     first = true;
-    note = 'Eerste keer: kies een gewicht dat je '+repMin+'× kunt met nog '+(rirFor(week,0,n,status,false)??3)+' reps over.';
+    if (ex.start) w = ex.start;
+    note = (ex.start ? 'Eerste keer: adviesgewicht '+fmtN(ex.start,2)+' kg'+(ex.perHand?' per hand':'')+'. ' : 'Eerste keer: ')+'Kies een gewicht dat je '+repMin+'× kunt met nog '+(rirFor(week,0,n,status,false)??3)+' reps over; te licht of te zwaar? Pas het aan.';
   } else if (!dec.length){
     w = topW(hist[0].sets);
   } else {
@@ -487,7 +504,7 @@ function vHome(){
     const rows = d.items.map((c,i) => {
       const ex = EXo(c.ex), n = setsFor(w,i,c,'groen'), tg = computeTargets(c.ex, c, w, n, 'groen');
       const s0 = tg.sets[0];
-      return `<tr><td>${esc(ex.name)}</td><td>${n}×</td><td>${tg.first ? 'starting weight' : esc(targetTxt(ex, s0.w, s0.r))}</td></tr>`;
+      return `<tr><td>${esc(ex.name)}</td><td>${n}×</td><td>${tg.first ? (s0.w!=null ? 'advies '+esc(targetTxt(ex, s0.w, s0.r)) : 'starting weight') : esc(targetTxt(ex, s0.w, s0.r))}</td></tr>`;
     }).join('');
     const doneWeek = state.sessions.filter(s => s.done && s.status!=='rood' && s.week===w.n).length;
     const cap = w.maxSessions && doneWeek >= w.maxSessions;
@@ -551,7 +568,7 @@ function vTrain(){
     }
     h += `</div>`;
   });
-  h += `<div class="card"><h3>Cardio (optioneel)</h3><div class="grid2"><div><label for="cmin">Minuten</label><input id="cmin" inputmode="numeric" data-a="cardio-min" value="${S.cardioMin??''}"></div>
+  h += `<div class="card"><h3>Cardio (10–20 min, rustig tempo)</h3><div class="grid2"><div><label for="cmin">Minuten</label><input id="cmin" inputmode="numeric" data-a="cardio-min" value="${S.cardioMin??''}"></div>
     <div><label for="ctype">Type</label><select id="ctype" data-a="cardio-type">${['Recumbent bike','Rower','Swimming','Walking'].map(o=>`<option ${o===S.cardioType?'selected':''}>${o}</option>`).join('')}</select></div></div>
     <p class="muted small">Praattest: je kunt nog hele zinnen praten.</p>
     <label for="notes" style="margin-top:8px">Notities</label><textarea id="notes" data-a="notes" placeholder="Stoelstand, klachten, gevoel">${esc(S.notes||'')}</textarea></div>
@@ -754,7 +771,7 @@ function finish(){
     const cfg = {repMin:it.repMin, repMax:it.repMax, core:it.core};
     const t = computeTargets(it.ex, cfg, w, Math.max(1, setsFor(w, i, cfg, 'groen')), 'groen');
     const uniq = [...new Set(t.sets.map(x=>x.r))];
-    next.push({name:ex.name, txt: t.first ? 'Starting weight kiezen' : ex.bw ? t.sets[0].r+' '+(ex.unit||'reps') : fmtN(t.sets[0].w,2)+' kg × '+uniq.join('/')});
+    next.push({name:ex.name, txt: t.first && t.sets[0].w==null ? 'Starting weight kiezen' : t.first ? 'Advies '+fmtN(t.sets[0].w,2)+' kg' : ex.bw ? t.sets[0].r+' '+(ex.unit||'reps') : fmtN(t.sets[0].w,2)+' kg × '+uniq.join('/')});
   });
   summary = {day:S.day, sets, vol, prs, next, cardio:S.cardioMin};
   save(); render(); window.scrollTo(0,0);
