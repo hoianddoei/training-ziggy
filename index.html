@@ -114,7 +114,7 @@ const HOLIDAY = '2026-11-29';
 const PHOTO_DAYS = ['2026-09-27','2026-10-11','2026-10-25','2026-11-08','2026-11-22'];
 
 const WEEKS = [
-  {n:0,start:'2026-09-23',end:'2026-09-27',phase:'Start',sets:2,rirMin:4,rirMax:4,note:'Kennismaken: stel de machines in en vind je starting weights.'},
+  {n:0,start:'2026-09-23',end:'2026-09-27',phase:'Start',sets:2,rirMin:4,rirMax:4,maxSessions:1,note:'1 training deze week. Kennismaken: stel de machines in en vind je starting weights.'},
   {n:1,start:'2026-09-28',end:'2026-10-04',phase:'Fundament',sets:2,rirMin:3,rirMax:3,note:'Techniek eerst. Uitademen bij duwen, rustig opstaan.'},
   {n:2,start:'2026-10-05',end:'2026-10-11',phase:'Fundament',sets:2,firstTwo:3,rirMin:3,rirMax:3,note:'De eerste twee oefeningen krijgen 3 sets.'},
   {n:3,start:'2026-10-12',end:'2026-10-18',phase:'Opbouw',sets:3,rirMin:2,rirMax:3,note:'Optioneel 10 min recumbent bike na de strength training.'},
@@ -492,7 +492,7 @@ function vHome(){
     const doneWeek = state.sessions.filter(s => s.done && s.status!=='rood' && s.week===w.n).length;
     const cap = w.maxSessions && doneWeek >= w.maxSessions;
     h += `<div class="card"><h2>Volgende: Dag ${code}, ${esc(d.name)}</h2>
-      ${cap ? `<div class="banner">Je hebt deze week al ${doneWeek} trainingen gedaan. In de vakantieweek zijn 2 lichte trainingen genoeg.</div>` : ''}
+      ${cap ? `<div class="banner">Je hebt deze week al ${doneWeek} training${doneWeek===1?'':'en'} gedaan. ${w.n===0 ? 'Deze startweek is 1 training genoeg; vanaf volgende week 3 per week.' : 'In de vakantieweek zijn 2 lichte trainingen genoeg.'}</div>` : ''}
       <div class="tbl-wrap"><table><tbody>${rows}</tbody></table></div>
       <p></p><button class="btn-p btn-block" data-a="go-train">Start training</button></div>`;
   }
